@@ -199,16 +199,13 @@ class DefaultGenerator(Generator):
                 call += '(%s)' % (
                     ','.join(['%s=%s' % (k, repr(v)) for k, v in args.items()]),
                 )
-            call += ',\n'
+            call += ','
             self.output_.append(''.join([
                 indent(2),
-                'self.assert%s(\n' % self.get_assert(return_value),
-                indent(3),
+                'self.assert%s(' % self.get_assert(return_value),
                 call,
-                indent(3),
-                '%s\n' % self.get_assert_value(return_value),
-                indent(2),
-                ')\n'
+                '%s' % self.get_assert_value(return_value),
+                ')'
             ]))
             self.output_.append('')
             break
@@ -226,10 +223,11 @@ class DefaultGenerator(Generator):
                 self.dump_mock_decorators(mocks)
                 self.output_.append(indent(1) + 'def test_%s(self%s):' % (runtime.get_code_name(code), self.get_mock_args(mocks)))
                 self.dump_mock_return_values(mocks)
-                try:
-                    self.dump_call(filename, code, random.choice(list(function.calls.values())))
-                except:
-                    traceback.print_exc()
+                for i in list(function.calls.values()):
+                   try:
+                       self.dump_call(filename, code, i)
+                   except:
+                       traceback.print_exc()
 
         self.output_.append('if __name__ == "__main__":')
         self.output_.append(indent(1) + 'unittest.main()\n')
